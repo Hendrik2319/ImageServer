@@ -3,6 +3,8 @@ package com.example.imageserver.data;
 import lombok.Getter;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 public class Folder {
 
@@ -40,5 +42,15 @@ public class Folder {
 
     public String getPath() {
         return folder.getPath();
+    }
+
+    public List<String> getFiles(int i0, int i1) {
+        File[] files = folder.listFiles(File::isFile);
+        if (files==null || files.length<=i0 || i1<=0 || i1<=i0)
+            return List.of();
+        i1 = Math.min(i1, files.length);
+        i0 = Math.max(0, i0);
+        files = Arrays.copyOfRange(files, i0, i1);
+        return Arrays.stream(files).map(File::getName).toList();
     }
 }

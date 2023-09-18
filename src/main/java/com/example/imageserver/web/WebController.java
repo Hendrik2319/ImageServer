@@ -26,11 +26,12 @@ public class WebController {
     }
 
     @GetMapping("/{folder}")
-    public @ResponseBody String getFolder(@PathVariable String folder) {
+    public String getFolder(Model model, @PathVariable String folder) {
         Folder folder_ = folderRepository.get(folder);
-        if (folder_==null)
-            return "Folder: \"%s\" is unknown".formatted(folder);
-        return "Folder: \"%s\"%n -> %s".formatted(folder, folder_.getPath());
+        model.addAttribute("error", folder_==null ? "Folder: \"%s\" is unknown".formatted(folder) : null);
+        model.addAttribute("folder", folder_);
+        model.addAttribute("files", folder_==null ? null : folder_.getFiles(0,10));
+        return "folderView";
     }
 
     @GetMapping("/{folder}/{file}")
