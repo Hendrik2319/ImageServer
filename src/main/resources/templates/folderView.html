@@ -5,9 +5,8 @@
     <title>Image Server</title>
 </head>
 <body>
-    <h4 th:if="${error  != null}" th:text="${error}" style="color:red;">{error}</h4>
-    <h4 th:if="${folder != null}" th:text="${folder.getKey()}">{folder}</h4>
-
+    <h3 th:if="${error  != null}" th:text="${error}" style="color:red;">{error}</h3>
+    <h3 th:if="${folder != null}" th:text="'Folder: '+${folder.getKey()}">{folder}</h3>
     <table th:if="${files != null && folder != null}">
         <thead>
             <tr>
