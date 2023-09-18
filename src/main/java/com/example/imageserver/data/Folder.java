@@ -4,9 +4,11 @@ import java.io.File;
 
 public class Folder {
 
+    private final String key;
     private final File folder;
 
-    public Folder(File folder) {
+    public Folder(String key, File folder) {
+        this.key = key;
         if (folder==null) throw new IllegalArgumentException();
         if (!folder.isDirectory()) throw new IllegalArgumentException();
         this.folder = folder.getAbsoluteFile();
@@ -17,12 +19,22 @@ public class Folder {
         return file_.isFile() ? file_ : null;
     }
 
+    String toOutputLine() {
+        return "%s: %s".formatted( key, folder );
+    }
+
     @Override
     public String toString() {
-        return folder.toString();
+        return "Folder{" +
+                "folder=" + folder +
+                '}';
     }
 
     public String getName() {
         return folder.getName();
+    }
+
+    public String getPath() {
+        return folder.getPath();
     }
 }

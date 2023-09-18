@@ -3,39 +3,40 @@ package com.example.imageserver.data;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Repository
 public class FolderRepository {
 
-    private final List<Folder> folders;
+    private final Map<String,Folder> folders;
 
     private FolderRepository() {
-        folders = new ArrayList<>();
+        folders = new HashMap<>();
     }
 
-    public List<Folder> getAllFolders() {
-        return folders;
+    public Collection<Folder> getAllFolders() {
+        return folders.values();
     }
 
-    public void add(File folder) {
-        folders.add(new Folder(folder));
+    public boolean containsKey(String key) {
+        return folders.containsKey(key);
     }
 
-    public Folder get(String folder) {
-        for (Folder folder_ : folders) {
-            if (folder.equals(folder_.getName()))
-                return folder_;
-        }
-        return null;
+    public void add(String key, File folder) {
+        folders.put(key, new Folder(key, folder));
+    }
+
+    public Folder get(String key) {
+        return folders.get(key);
     }
 
     @Override
     public String toString() {
-        return folders.stream()
-                .map(Folder::toString)
+        return folders.values().stream()
+                .map(Folder::toOutputLine)
                 .sorted()
                 .collect(Collectors.joining("\r\n"));
     }

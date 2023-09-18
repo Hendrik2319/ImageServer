@@ -44,6 +44,7 @@ public class AdminInterface {
         textAreaScrollPane.setPreferredSize(new Dimension(500,300));
 
         JPanel contentPane = new JPanel(new BorderLayout());
+        contentPane.setBorder(BorderFactory.createEmptyBorder(0,5,5,5));
         contentPane.add(toolBar, BorderLayout.PAGE_START);
         contentPane.add(textAreaScrollPane, BorderLayout.CENTER);
 
@@ -61,7 +62,17 @@ public class AdminInterface {
 
 
     private void addFolder(File folder) {
-        folderRepository.add(folder);
+        String key = folder.getName();
+        while (folderRepository.containsKey(key)) {
+            String[] msg = {
+                    "A folder with name \"%s\" was already added.".formatted(key),
+                    "Please enter modified name for this folder:"
+            };
+            Object result = JOptionPane.showInputDialog(mainWindow, msg, "title", JOptionPane.QUESTION_MESSAGE, null, null, key);
+            if (result==null) return;
+            key = result.toString();
+        }
+        folderRepository.add(key, folder);
         textArea.setText(folderRepository.toString());
     }
 

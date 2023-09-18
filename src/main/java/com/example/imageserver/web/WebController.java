@@ -30,7 +30,7 @@ public class WebController {
         Folder folder_ = folderRepository.get(folder);
         if (folder_==null)
             return "Folder: \"%s\" is unknown".formatted(folder);
-        return "Folder: \"%s\" is known".formatted(folder);
+        return "Folder: \"%s\"%n -> %s".formatted(folder, folder_.getPath());
     }
 
     @GetMapping("/{folder}/{file}")
@@ -41,9 +41,9 @@ public class WebController {
 
         File file_ = folder_.getFile(file);
         if (file_==null)
-            return "Folder: \"%s\" is known%nFile: \"%s\" is unknown".formatted(folder, file);
+            return "Folder: \"%s\"%n -> %s%nFile: \"%s\" is unknown".formatted(folder, folder_.getPath(), file);
 
-        return "Folder: \"%s\"%nFile: \"%s\"".formatted(folder, file);
+        return "Folder: \"%s\"%n -> %s%nFile: \"%s\"%n -> %s".formatted(folder, folder_.getPath(), file, file_.getPath());
     }
 
 }
