@@ -1,20 +1,26 @@
 package com.example.imageserver.admin;
 
-import com.example.imageserver.data.FolderList;
+import com.example.imageserver.data.FolderRepository;
+import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+@Component
 public class AdminInterface {
+
+    private final FolderRepository folderRepository;
 
     private final JFrame mainWindow;
     private final JToolBar toolBar;
     private final JTextArea textArea;
     private final JFileChooser folderChooser;
 
-    public AdminInterface() {
+    public AdminInterface(FolderRepository folderRepository) {
+        this.folderRepository = folderRepository;
+
         folderChooser = new JFileChooser("./");
         folderChooser.setMultiSelectionEnabled(false);
         folderChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -55,12 +61,8 @@ public class AdminInterface {
 
 
     private void addFolder(File folder) {
-        FolderList.instance.add(folder);
-        textArea.setText(FolderList.instance.toString());
-    }
-
-    public void initialize() {
-
+        folderRepository.add(folder);
+        textArea.setText(folderRepository.toString());
     }
 
     private static JButton createButton(String text, boolean enabled, ActionListener al) {

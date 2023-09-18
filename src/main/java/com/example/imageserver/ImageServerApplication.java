@@ -9,7 +9,6 @@ public class ImageServerApplication {
 
     public static void main(String[] args) {
         AdminInterface.setLookAndFeel();
-        new AdminInterface().initialize();
         SpringApplication.run(ImageServerApplication.class, args);
     }
 

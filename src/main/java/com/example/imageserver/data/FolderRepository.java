@@ -1,28 +1,31 @@
 package com.example.imageserver.data;
 
+import org.springframework.stereotype.Repository;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FolderList {
-    public static final FolderList instance = new FolderList();
-    private final List<Folder> folderList;
+@Repository
+public class FolderRepository {
 
-    private FolderList() {
-        folderList = new ArrayList<>();
+    private final List<Folder> folders;
+
+    private FolderRepository() {
+        folders = new ArrayList<>();
     }
 
     public List<Folder> getAllFolders() {
-        return folderList;
+        return folders;
     }
 
     public void add(File folder) {
-        folderList.add(new Folder(folder));
+        folders.add(new Folder(folder));
     }
 
     public Folder get(String folder) {
-        for (Folder folder_ : folderList) {
+        for (Folder folder_ : folders) {
             if (folder.equals(folder_.getName()))
                 return folder_;
         }
@@ -31,7 +34,7 @@ public class FolderList {
 
     @Override
     public String toString() {
-        return folderList.stream()
+        return folders.stream()
                 .map(Folder::toString)
                 .sorted()
                 .collect(Collectors.joining("\r\n"));
