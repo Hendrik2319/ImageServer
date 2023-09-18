@@ -1,9 +1,12 @@
 package com.example.imageserver.data;
 
+import lombok.Getter;
+
 import java.io.File;
 
 public class Folder {
 
+    @Getter
     private final String key;
     private final File folder;
 
@@ -30,6 +33,7 @@ public class Folder {
                 '}';
     }
 
+    @SuppressWarnings("unused")
     public String getName() {
         return folder.getName();
     }

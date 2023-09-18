@@ -5,6 +5,19 @@
     <title>Image Server</title>
 </head>
 <body>
-    Main
+    <table>
+        <thead>
+            <tr>
+                <th>Label </th>
+                <th>Path  </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="folder : ${folders}">
+                <td><a href="" th:href="${folder.getKey()}" th:text="${folder.getKey()}">[Label ]</a></td>
+                <td th:text="${folder.getPath()}">[Path  ]</td>
+            </tr>
+        </tbody>
+    </table>
 </body>
 </html>
