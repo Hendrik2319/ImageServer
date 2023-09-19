@@ -85,4 +85,8 @@ public class Folder {
         i0 = Math.max(0, i0);
         return filesList.subList(i0,i1).stream().map(FileData::getName).toList();
     }
+
+    public int getFileCount() {
+        return filesMap.size();
+    }
 }

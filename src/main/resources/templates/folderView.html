@@ -5,24 +5,34 @@
     <title>Image Server</title>
 </head>
 <body>
+    <a href="/">&lt; back</a>
     <h3 th:if="${error  != null}" th:text="${error}" style="color:red;">{error}</h3>
     <div th:if="${folder != null}">
         <h3  th:text="'Folder: '+${folder.getKey()}">{folder}</h3>
         <form th:action="${folder.getKey()}" method="POST">
-            <label>
-                Page:
-                <select th:if="${pages != null}" name="page_start" onchange="submit();">
-                    <option th:each="page : ${pages}" th:value="${page.pageStart()}" th:text="${page.text()}">{page}</option>
-                </select>
-            </label>
-            <button type="submit" name="page_button" value="down">&lt;</button>
-            <button type="submit" name="page_button" value="up">&gt;</button>
-            <label>
+            <label th:if="${pageSizes != null}">
                 Page Size:
-                <select th:if="${pageSizes != null}" name="page_size" onchange="submit();">
-                    <option th:each="pageSize : ${pageSizes}" th:value="${pageSize}" th:text="${pageSize}">{pageSize}</option>
+                <select name="page_size" onchange="submit();">
+                    <option th:each="ps : ${pageSizes}"
+                            th:value="${ps.pageSize()}"
+                            th:text="${ps.pageSize()}"
+                            th:selected="${ps.isSelected()}"
+                    >{pageSize}</option>
+                    <option value="-1" th:selected="${pageSize<=0}">all</option>
                 </select>
             </label>
+            <label th:if="${pages != null}">
+                Page:
+                <select name="page_start" onchange="submit();">
+                    <option th:each="page : ${pages}"
+                            th:value="${page.pageStart()}"
+                            th:text="${page.text()}"
+                            th:selected="${page.isSelected()}"
+                    >{page}</option>
+                </select>
+            </label>
+            <button th:if="${pageSize>0}" type="submit" name="page_button" value="down">&lt;</button>
+            <button th:if="${pageSize>0}" type="submit" name="page_button" value="up">&gt;</button>
         </form>
         <table th:if="${files != null}">
             <thead>

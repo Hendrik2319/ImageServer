@@ -8,6 +8,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.IntStream;
 
 @Controller
 public class WebController {
@@ -26,35 +29,77 @@ public class WebController {
 
     @GetMapping("/{folderKey}")
     public String getFolderInit(Model model, @PathVariable String folderKey) {
-        return getFolderPage_(model, folderKey);
+        return getFolderPage_(model, folderKey, null, 0, 20);
     }
 
     @PostMapping("/{folderKey}")
     public String getFolderPage(
             Model model, @PathVariable String folderKey,
-            @RequestParam @Nullable String page_button,
-            @RequestParam(defaultValue =  "0") int page_start,
-            @RequestParam(defaultValue = "20") int page_size
+            @RequestParam(name="page_button") @Nullable String pageButton,
+            @RequestParam(name="page_start" , defaultValue =  "0") int pageStart,
+            @RequestParam(name="page_size"  , defaultValue = "20") int pageSize
     ) {
-        System.out.printf("[%s] page_button: %s / page_start: %s / page_size: %s%n", folderKey, page_button, page_start, page_size);
-        return getFolderPage_(model, folderKey);
+        System.out.printf("[%s] page_button: %s / page_start: %s / page_size: %s%n", folderKey, pageButton, pageStart, pageSize);
+        return getFolderPage_(model, folderKey, pageButton, pageStart, pageSize);
     }
 
-    private String getFolderPage_(Model model, String folderKey) {
+    private String getFolderPage_(Model model, String folderKey, String pageButton, int pageStart, int pageSize) {
         Folder folder = folderRepository.get(folderKey);
-        model.addAttribute("error", folder==null ? "Folder: \"%s\" is unknown".formatted(folderKey) : null);
+
+        String error = null;
+        List<String> files = null;
+        List<Page> pages = null;
+        List<PageSize> pageSizes = null;
+
+        if (folder == null) {
+            error = "Folder: \"%s\" is unknown".formatted(folderKey);
+        } else {
+            int n = folder.getFileCount();
+
+            int finalPageSize = pageSize;
+            pageSizes = IntStream.of(10, 20, 30, 50, 70, 100)
+                    .filter( i -> i<n )
+                    .mapToObj( i -> new PageSize(i, i== finalPageSize))
+                    .toList();
+
+            int pageEnd;
+            if (pageSize<=0)
+            {
+                pageSize = -1;
+                pageStart = 0;
+                pageEnd = n;
+            }
+            else
+            {
+                if ("up"  .equals(pageButton)) pageStart += pageSize;
+                if ("down".equals(pageButton)) pageStart -= pageSize;
+                pageStart = Math.min(Math.max(0, pageStart), n-1);
+                pageStart = (pageStart/pageSize)*pageSize;
+                pageEnd = pageStart + pageSize;
+
+                pages = new ArrayList<>();
+                for (int i=0; i<n; i+=pageSize)
+                    pages.add(new Page(
+                            i,
+                            "%d..%d".formatted(i+1, Math.min(i + pageSize, n)),
+                            i == pageStart
+                    ));
+            }
+
+            files = n==0 ? List.of() : folder.getFiles(pageStart, pageEnd);
+        }
+
+        model.addAttribute("error", error);
         model.addAttribute("folder", folder);
-        model.addAttribute("files", folder==null ? null : folder.getFiles(0,10));
-        model.addAttribute("pages", new Page[] {
-                new Page(0, "0..29"),
-                new Page(30, "30..59"),
-                new Page(60, "60..72")
-        });
-        model.addAttribute("pageSizes", new int[] { 10, 20, 30, 50, 70, 100 });
+        model.addAttribute("files", files);
+        model.addAttribute("pages", pages);
+        model.addAttribute("pageSize", pageSize);
+        model.addAttribute("pageSizes", pageSizes);
         return "folderView";
     }
 
-    public record Page(int pageStart, String text) {}
+    public record Page(int pageStart, String text, boolean isSelected) {}
+    public record PageSize(int pageSize, boolean isSelected) {}
 
     @GetMapping("/{folderKey}/{fileName}")
     public @ResponseBody String getFile(@PathVariable String folderKey, @PathVariable String fileName) {
