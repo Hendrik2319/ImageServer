@@ -33,8 +33,8 @@ public class WebController {
     public String getFolderPage(
             Model model, @PathVariable String folderKey,
             @RequestParam @Nullable String page_button,
-            @RequestParam @Nullable Integer page_start,
-            @RequestParam @Nullable Integer page_size
+            @RequestParam(defaultValue =  "0") int page_start,
+            @RequestParam(defaultValue = "20") int page_size
     ) {
         System.out.printf("[%s] page_button: %s / page_start: %s / page_size: %s%n", folderKey, page_button, page_start, page_size);
         return getFolderPage_(model, folderKey);
