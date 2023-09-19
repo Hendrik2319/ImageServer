@@ -6,7 +6,7 @@
 </head>
 <body>
     <a href="/">&lt; back</a>
-    <h3 th:if="${error  != null}" th:text="${error}" style="color:red;">{error}</h3>
+    <h3 th:if="${error != null}" th:text="${error}" style="color:red;">{error}</h3>
     <div th:if="${folder != null}">
         <h3  th:text="'Folder: '+${folder.getKey()}">{folder}</h3>
         <form th:action="${folder.getKey()}" method="POST">

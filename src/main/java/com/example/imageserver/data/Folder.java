@@ -52,10 +52,14 @@ public class Folder {
                 || fileName.endsWith(".gif");
     }
 
+    @SuppressWarnings("unused")
     public File getFile(String file) {
-        FileData fd = filesMap.get(file);
-        if (fd==null) return null;
-        return fd.getFile();
+        FileData fd = getFileData(file);
+        return fd == null ? null : fd.getFile();
+    }
+
+    public FileData getFileData(String file) {
+        return filesMap.get(file);
     }
 
     String toOutputLine() {

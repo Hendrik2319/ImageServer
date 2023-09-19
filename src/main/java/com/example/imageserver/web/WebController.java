@@ -1,5 +1,6 @@
 package com.example.imageserver.web;
 
+import com.example.imageserver.data.FileData;
 import com.example.imageserver.data.Folder;
 import com.example.imageserver.data.FolderRepository;
 import org.springframework.lang.Nullable;
@@ -7,7 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
+import javax.imageio.ImageIO;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -102,16 +104,22 @@ public class WebController {
     public record PageSize(int pageSize, boolean isSelected) {}
 
     @GetMapping("/{folderKey}/{fileName}")
-    public @ResponseBody String getFile(@PathVariable String folderKey, @PathVariable String fileName) {
+    public @ResponseBody Object getFile(@PathVariable String folderKey, @PathVariable String fileName) {
         Folder folder = folderRepository.get(folderKey);
         if (folder==null)
             return "Folder: \"%s\" is unknown".formatted(folderKey);
 
-        File file = folder.getFile(fileName);
+        FileData file = folder.getFileData(fileName);
         if (file==null)
             return "Folder: \"%s\"%n -> %s%nFile: \"%s\" is unknown".formatted(folderKey, folder.getPath(), fileName);
 
-        return "Folder: \"%s\"%n -> %s%nFile: \"%s\"%n -> %s".formatted(folderKey, folder.getPath(), fileName, file.getPath());
+        //return "Folder: \"%s\"%n -> %s%nFile: \"%s\"%n -> %s".formatted(folderKey, folder.getPath(), fileName, file.getPath());
+
+        try {
+            return ImageIO.read(file.getFile());
+        } catch (IOException e) {
+            return "IOException while reading file \"%s\": %s".formatted(file.getFile().getAbsolutePath(), e.getMessage());
+        }
     }
 
 }
