@@ -3,6 +3,7 @@ package com.example.imageserver.web;
 import com.example.imageserver.data.FileData;
 import com.example.imageserver.data.Folder;
 import com.example.imageserver.data.FolderRepository;
+import com.example.imageserver.data.ThumbnailSize;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -107,7 +109,12 @@ public class WebController {
     public record PageSize(int pageSize, boolean isSelected) {}
 
     @GetMapping("/{folderKey}/{fileName}")
-    public void getFile(HttpServletResponse response, @PathVariable String folderKey, @PathVariable String fileName) {
+    public void getFile(
+            HttpServletResponse response,
+            @PathVariable String folderKey,
+            @PathVariable String fileName,
+            @RequestParam(name="t") @Nullable String thumbnailSize
+    ) {
         Folder folder = folderRepository.get(folderKey);
         if (folder==null) {
             returnError(response, "Folder: \"%s\" is unknown", folderKey);
@@ -120,14 +127,37 @@ public class WebController {
             return;
         }
 
+        if (thumbnailSize!=null) {
+            ThumbnailSize size = ThumbnailSize.get(thumbnailSize);
+            if (size!=null) {
+                byte[] bytes = file.getThumbnail(size);
+                if (bytes==null)
+                    returnError(response, "ERROR: Can't create thumbnail image");
+                else
+                    returnRawData(response, bytes, FileData.THUMBNAIL_IMAGE_MEDIATYPE);
+                return;
+            }
+        }
+
         returnImage(response, file);
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private void returnRawData(HttpServletResponse response, byte[] bytes, String mediaType) {
+        response.setContentType(mediaType);
+        try (BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream())) {
+            out.write(bytes);
+        } catch (IOException ex) {
+            System.err.printf("IOException while writing byte array to response OutputStream: %s%n", ex.getMessage());
+        }
     }
 
     private void returnImage(HttpServletResponse response, @NonNull FileData file) {
         response.setContentType(file.imageFormat.mediaType);
         try {
             Files.copy(file.file.toPath(), response.getOutputStream());
-        } catch (IOException ignored) {
+        } catch (IOException ex) {
+            System.err.printf("IOException while copying file content to response OutputStream: %s%n", ex.getMessage());
         }
     }
 
@@ -135,7 +165,8 @@ public class WebController {
         response.setContentType(MediaType.TEXT_PLAIN_VALUE);
         try {
             response.getWriter().printf(format, args);
-        } catch (IOException ignored) {
+        } catch (IOException ex) {
+            System.err.printf("IOException while writing plain text to response OutputStream: %s%n", ex.getMessage());
         }
     }
 

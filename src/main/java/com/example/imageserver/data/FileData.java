@@ -3,29 +3,65 @@ package com.example.imageserver.data;
 import lombok.NonNull;
 import org.springframework.http.MediaType;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Objects;
 
 @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal", "unused"})
 public class FileData {
 
+    public static final String THUMBNAIL_IMAGE_FORMAT = "png";
+    public static final String THUMBNAIL_IMAGE_MEDIATYPE = MediaType.IMAGE_PNG_VALUE;
+
     @NonNull public final File file;
     @NonNull public final ImageFormat imageFormat;
-    private BufferedImage fullImage;
-    private final EnumMap<ThumbnailSize,BufferedImage> thumbnails;
+    private final EnumMap<ThumbnailSize,byte[]> thumbnails;
 
     public FileData(File file) {
         this.file = Objects.requireNonNull(file);
         imageFormat = Objects.requireNonNull(ImageFormat.getImageFormat(file));
-        fullImage = null;
         thumbnails = new EnumMap<>(ThumbnailSize.class);
     }
 
     public String getName() {
         return file.getName();
     }
+
+    public byte[] getThumbnail(ThumbnailSize thumbnailSize) {
+        byte[] bytes = thumbnails.get(thumbnailSize);
+        if (bytes==null) {
+            BufferedImage image = null;
+            try {
+                image = ImageIO.read(file);
+            } catch (IOException ex) {
+                System.err.printf("IOException while reading image file \"%s\": %s%n", file, ex.getMessage());
+            }
+            int maxSize = image!=null ? Math.max(image.getWidth(), image.getHeight()) : 0;
+            if (maxSize!=0) {
+                int newWidth  = (int) ((image.getWidth () * (long)thumbnailSize.size) / maxSize);
+                int newHeight = (int) ((image.getHeight() * (long)thumbnailSize.size) / maxSize);
+                BufferedImage thumbImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g2 = thumbImage.createGraphics();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.drawImage(image, 0,0, newWidth, newHeight, null);
+                try {
+                    ByteArrayOutputStream output = new ByteArrayOutputStream();
+                    ImageIO.write(thumbImage, THUMBNAIL_IMAGE_FORMAT, output);
+                    bytes = output.toByteArray();
+                    thumbnails.put(thumbnailSize, bytes);
+                } catch (IOException ex) {
+                    System.err.printf("IOException while writing image data to byte array: %s%n", ex.getMessage());
+                }
+            }
+        }
+        return bytes;
+    }
+
 
     public enum ImageFormat {
         JPG(MediaType.IMAGE_JPEG_VALUE, ".jpeg",".jpg"),

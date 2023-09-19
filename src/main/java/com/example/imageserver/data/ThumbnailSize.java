@@ -7,10 +7,18 @@ public enum ThumbnailSize {
     _200(200),
     _250(250),
     ;
-    private final int size;
+    final int size;
 
     ThumbnailSize(int size) {
         this.size = size;
+    }
+
+    public static ThumbnailSize get(String thumbnailSizeStr) {
+        if (thumbnailSizeStr!=null)
+            for (ThumbnailSize size : values())
+                if (thumbnailSizeStr.equals(Integer.toString(size.size)))
+                    return size;
+        return null;
     }
 
     public String getLabel() {
