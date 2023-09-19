@@ -2,11 +2,10 @@ package com.example.imageserver.web;
 
 import com.example.imageserver.data.Folder;
 import com.example.imageserver.data.FolderRepository;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 
@@ -25,26 +24,49 @@ public class WebController {
         return "mainView";
     }
 
-    @GetMapping("/{folder}")
-    public String getFolder(Model model, @PathVariable String folder) {
-        Folder folder_ = folderRepository.get(folder);
-        model.addAttribute("error", folder_==null ? "Folder: \"%s\" is unknown".formatted(folder) : null);
-        model.addAttribute("folder", folder_);
-        model.addAttribute("files", folder_==null ? null : folder_.getFiles(0,10));
+    @GetMapping("/{folderKey}")
+    public String getFolderInit(Model model, @PathVariable String folderKey) {
+        return getFolderPage_(model, folderKey);
+    }
+
+    @PostMapping("/{folderKey}")
+    public String getFolderPage(
+            Model model, @PathVariable String folderKey,
+            @RequestParam @Nullable String page_button,
+            @RequestParam @Nullable Integer page_start,
+            @RequestParam @Nullable Integer page_size
+    ) {
+        System.out.printf("[%s] page_button: %s / page_start: %s / page_size: %s%n", folderKey, page_button, page_start, page_size);
+        return getFolderPage_(model, folderKey);
+    }
+
+    private String getFolderPage_(Model model, String folderKey) {
+        Folder folder = folderRepository.get(folderKey);
+        model.addAttribute("error", folder==null ? "Folder: \"%s\" is unknown".formatted(folderKey) : null);
+        model.addAttribute("folder", folder);
+        model.addAttribute("files", folder==null ? null : folder.getFiles(0,10));
+        model.addAttribute("pages", new Page[] {
+                new Page(0, "0..29"),
+                new Page(30, "30..59"),
+                new Page(60, "60..72")
+        });
+        model.addAttribute("pageSizes", new int[] { 10, 20, 30, 50, 70, 100 });
         return "folderView";
     }
 
-    @GetMapping("/{folder}/{file}")
-    public @ResponseBody String getFile(@PathVariable String folder, @PathVariable String file) {
-        Folder folder_ = folderRepository.get(folder);
-        if (folder_==null)
-            return "Folder: \"%s\" is unknown".formatted(folder);
+    public record Page(int pageStart, String text) {}
 
-        File file_ = folder_.getFile(file);
-        if (file_==null)
-            return "Folder: \"%s\"%n -> %s%nFile: \"%s\" is unknown".formatted(folder, folder_.getPath(), file);
+    @GetMapping("/{folderKey}/{fileName}")
+    public @ResponseBody String getFile(@PathVariable String folderKey, @PathVariable String fileName) {
+        Folder folder = folderRepository.get(folderKey);
+        if (folder==null)
+            return "Folder: \"%s\" is unknown".formatted(folderKey);
 
-        return "Folder: \"%s\"%n -> %s%nFile: \"%s\"%n -> %s".formatted(folder, folder_.getPath(), file, file_.getPath());
+        File file = folder.getFile(fileName);
+        if (file==null)
+            return "Folder: \"%s\"%n -> %s%nFile: \"%s\" is unknown".formatted(folderKey, folder.getPath(), fileName);
+
+        return "Folder: \"%s\"%n -> %s%nFile: \"%s\"%n -> %s".formatted(folderKey, folder.getPath(), fileName, file.getPath());
     }
 
 }

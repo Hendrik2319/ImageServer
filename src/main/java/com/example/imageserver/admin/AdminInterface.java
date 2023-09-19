@@ -14,6 +14,7 @@ public class AdminInterface {
     private final FolderRepository folderRepository;
 
     private final JFrame mainWindow;
+    @SuppressWarnings("FieldCanBeLocal")
     private final JToolBar toolBar;
     private final JTextArea textArea;
     private final JFileChooser folderChooser;
@@ -48,7 +49,7 @@ public class AdminInterface {
         contentPane.add(toolBar, BorderLayout.PAGE_START);
         contentPane.add(textAreaScrollPane, BorderLayout.CENTER);
 
-        mainWindow.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        mainWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainWindow.setContentPane(contentPane);
         mainWindow.setLocationByPlatform(true);
         mainWindow.pack();
@@ -76,6 +77,7 @@ public class AdminInterface {
         textArea.setText(folderRepository.toString());
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static JButton createButton(String text, boolean enabled, ActionListener al) {
         JButton comp = new JButton(text);
         comp.setEnabled(enabled);

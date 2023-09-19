@@ -6,18 +6,36 @@
 </head>
 <body>
     <h3 th:if="${error  != null}" th:text="${error}" style="color:red;">{error}</h3>
-    <h3 th:if="${folder != null}" th:text="'Folder: '+${folder.getKey()}">{folder}</h3>
-    <table th:if="${files != null && folder != null}">
-        <thead>
-            <tr>
-                <th>File</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="file : ${files}">
-                <td><a href="" th:href="${folder.getKey() +'/'+ file}" th:text="${file}">{file}</a></td>
-            </tr>
-        </tbody>
-    </table>
+    <div th:if="${folder != null}">
+        <h3  th:text="'Folder: '+${folder.getKey()}">{folder}</h3>
+        <form th:action="${folder.getKey()}" method="POST">
+            <label>
+                Page:
+                <select th:if="${pages != null}" name="page_start" onchange="submit();">
+                    <option th:each="page : ${pages}" th:value="${page.pageStart()}" th:text="${page.text()}">{page}</option>
+                </select>
+            </label>
+            <button type="submit" name="page_button" value="down">&lt;</button>
+            <button type="submit" name="page_button" value="up">&gt;</button>
+            <label>
+                Page Size:
+                <select th:if="${pageSizes != null}" name="page_size" onchange="submit();">
+                    <option th:each="pageSize : ${pageSizes}" th:value="${pageSize}" th:text="${pageSize}">{pageSize}</option>
+                </select>
+            </label>
+        </form>
+        <table th:if="${files != null}">
+            <thead>
+                <tr>
+                    <th>File</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="file : ${files}">
+                    <td><a href="" th:href="${folder.getKey() +'/'+ file}" th:text="${file}">{file}</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>
