@@ -3,13 +3,16 @@ package com.example.imageserver.web;
 import com.example.imageserver.data.FileData;
 import com.example.imageserver.data.Folder;
 import com.example.imageserver.data.FolderRepository;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.MediaType;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.imageio.ImageIO;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -41,7 +44,7 @@ public class WebController {
             @RequestParam(name="page_start" , defaultValue =  "0") int pageStart,
             @RequestParam(name="page_size"  , defaultValue = "20") int pageSize
     ) {
-        System.out.printf("[%s] page_button: %s / page_start: %s / page_size: %s%n", folderKey, pageButton, pageStart, pageSize);
+        //System.out.printf("[%s] page_button: %s / page_start: %s / page_size: %s%n", folderKey, pageButton, pageStart, pageSize);
         return getFolderPage_(model, folderKey, pageButton, pageStart, pageSize);
     }
 
@@ -104,21 +107,35 @@ public class WebController {
     public record PageSize(int pageSize, boolean isSelected) {}
 
     @GetMapping("/{folderKey}/{fileName}")
-    public @ResponseBody Object getFile(@PathVariable String folderKey, @PathVariable String fileName) {
+    public void getFile(HttpServletResponse response, @PathVariable String folderKey, @PathVariable String fileName) {
         Folder folder = folderRepository.get(folderKey);
-        if (folder==null)
-            return "Folder: \"%s\" is unknown".formatted(folderKey);
+        if (folder==null) {
+            returnError(response, "Folder: \"%s\" is unknown", folderKey);
+            return;
+        }
 
         FileData file = folder.getFileData(fileName);
-        if (file==null)
-            return "Folder: \"%s\"%n -> %s%nFile: \"%s\" is unknown".formatted(folderKey, folder.getPath(), fileName);
+        if (file==null) {
+            returnError(response, "Folder: \"%s\"%n -> %s%nFile: \"%s\" is unknown", folderKey, folder.getPath(), fileName);
+            return;
+        }
 
-        //return "Folder: \"%s\"%n -> %s%nFile: \"%s\"%n -> %s".formatted(folderKey, folder.getPath(), fileName, file.getPath());
+        returnImage(response, file);
+    }
 
+    private void returnImage(HttpServletResponse response, @NonNull FileData file) {
+        response.setContentType(file.imageFormat.mediaType);
         try {
-            return ImageIO.read(file.getFile());
-        } catch (IOException e) {
-            return "IOException while reading file \"%s\": %s".formatted(file.getFile().getAbsolutePath(), e.getMessage());
+            Files.copy(file.file.toPath(), response.getOutputStream());
+        } catch (IOException ignored) {
+        }
+    }
+
+    private void returnError(HttpServletResponse response, String format, Object... args) {
+        response.setContentType(MediaType.TEXT_PLAIN_VALUE);
+        try {
+            response.getWriter().printf(format, args);
+        } catch (IOException ignored) {
         }
     }
 

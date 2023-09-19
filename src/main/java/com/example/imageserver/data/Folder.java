@@ -44,18 +44,13 @@ public class Folder {
 
     private boolean isImage(File file) {
         if (!file.isFile()) return false;
-        String fileName = file.getName().toLowerCase();
-        return fileName.endsWith(".jpg")
-                || fileName.endsWith(".jpeg")
-                || fileName.endsWith(".png")
-                || fileName.endsWith(".webp")
-                || fileName.endsWith(".gif");
+        return FileData.ImageFormat.getImageFormat(file)!=null;
     }
 
     @SuppressWarnings("unused")
     public File getFile(String file) {
         FileData fd = getFileData(file);
-        return fd == null ? null : fd.getFile();
+        return fd == null ? null : fd.file;
     }
 
     public FileData getFileData(String file) {
