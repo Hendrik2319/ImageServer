@@ -1,5 +1,7 @@
 package com.example.imageserver.data;
 
+import org.springframework.lang.NonNull;
+
 public enum ThumbnailSize {
     _50(50),
     _100(100),
@@ -19,6 +21,13 @@ public enum ThumbnailSize {
                 if (thumbnailSizeStr.equals(Integer.toString(size.size)))
                     return size;
         return null;
+    }
+
+    public static @NonNull ThumbnailSize get(int size, @NonNull ThumbnailSize defaultValue) {
+        for (ThumbnailSize ts : values())
+            if (ts.size == size)
+                return ts;
+        return defaultValue;
     }
 
     public String getLabel() {

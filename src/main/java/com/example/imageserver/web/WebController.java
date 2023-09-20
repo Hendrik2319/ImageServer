@@ -36,21 +36,31 @@ public class WebController {
 
     @GetMapping("/{folderKey}")
     public String getFolderInit(Model model, @PathVariable String folderKey) {
-        return getFolderPage_(model, folderKey, null, 0, 20);
+        return getFolderPage_(model, folderKey, null, 0, 20, ViewType.Thumbnails, ThumbnailSize._100);
     }
 
     @PostMapping("/{folderKey}")
     public String getFolderPage(
             Model model, @PathVariable String folderKey,
             @RequestParam(name="page_button") @Nullable String pageButton,
-            @RequestParam(name="page_start" , defaultValue =  "0") int pageStart,
-            @RequestParam(name="page_size"  , defaultValue = "20") int pageSize
+            @RequestParam(name="page_start"    , defaultValue =   "0") int pageStart,
+            @RequestParam(name="page_size"     , defaultValue =  "20") int pageSize,
+            @RequestParam(name="view_type"     , defaultValue = "thumbnails") String viewTypeStr,
+            @RequestParam(name="thumbnail_size", defaultValue = "100") int thumbnailSize
     ) {
-        //System.out.printf("[%s] page_button: %s / page_start: %s / page_size: %s%n", folderKey, pageButton, pageStart, pageSize);
-        return getFolderPage_(model, folderKey, pageButton, pageStart, pageSize);
+        //System.out.printf("[%s] page_button: %s / page_start: %s / page_size: %s / view_type: %s%n", folderKey, pageButton, pageStart, pageSize, viewTypeStr);
+        return getFolderPage_(
+                model, folderKey, pageButton, pageStart, pageSize,
+                ViewType.parse(viewTypeStr, ViewType.Thumbnails),
+                ThumbnailSize.get(thumbnailSize, ThumbnailSize._100)
+        );
     }
 
-    private String getFolderPage_(Model model, String folderKey, String pageButton, int pageStart, int pageSize) {
+    private String getFolderPage_(
+            @NonNull Model model, @NonNull String folderKey, String pageButton,
+            int pageStart, int pageSize,
+            @NonNull ViewType viewType, @NonNull ThumbnailSize thumbnailSize
+    ) {
         Folder folder = folderRepository.get(folderKey);
 
         String error = null;
@@ -102,7 +112,9 @@ public class WebController {
         model.addAttribute("pages", pages);
         model.addAttribute("pageSize", pageSize);
         model.addAttribute("pageSizes", pageSizes);
-        model.addAttribute("thumbnailSize", ThumbnailSize._200.size);
+        model.addAttribute("viewType", viewType);
+        model.addAttribute("viewTypes", ViewType.values());
+        model.addAttribute("thumbnailSize", thumbnailSize);
         model.addAttribute("thumbnailSizes", ThumbnailSize.values());
         return "folderView";
     }

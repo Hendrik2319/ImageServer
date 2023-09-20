@@ -29,7 +29,6 @@
         }
         .Thumbnail {
             border:1px solid black;
-            overflow:auto;
         }
         .Thumbnail span {
             overflow-wrap:break-word;
@@ -40,8 +39,28 @@
     <a href="/">&lt; back</a>
     <h3 th:if="${error != null}" th:text="${error}" style="color:red;">{error}</h3>
     <div class="MainContainer" th:if="${folder != null}">
-        <h3  th:text="'Folder: '+${folder.getKey()}">{folder}</h3>
+        <h3 th:text="'Folder: '+${folder.getKey()}">{folder}</h3>
         <form th:action="${folder.getKey()}" method="POST">
+            <label th:if="${viewTypes != null}">
+                View Type:
+                <select name="view_type" onchange="submit();">
+                    <option th:each="vt : ${viewTypes}"
+                            th:value="${vt.value}"
+                            th:text="${vt.label}"
+                            th:selected="${viewType==vt}"
+                    >{viewType}</option>
+                </select>
+            </label>
+            <label th:if="${thumbnailSizes!=null && viewType.value.equals('thumbnails')}">
+                Thumbnail Size:
+                <select name="thumbnail_size" onchange="submit();">
+                    <option th:each="ts : ${thumbnailSizes}"
+                            th:value="${ts.size}"
+                            th:text="${ts.getLabel()}"
+                            th:selected="${thumbnailSize==ts}"
+                    >{thumbnailSize}</option>
+                </select>
+            </label>
             <label th:if="${pageSizes != null}">
                 Page Size:
                 <select name="page_size" onchange="submit();">
@@ -66,8 +85,7 @@
             <button th:if="${pageSize>0}" type="submit" name="page_button" value="down">&lt;</button>
             <button th:if="${pageSize>0}" type="submit" name="page_button" value="up">&gt;</button>
         </form>
-<!--
-        <table th:if="${files != null}">
+        <table th:if="${files!=null && viewType.value.equals('table')}">
             <thead>
                 <tr>
                     <th>File</th>
@@ -79,11 +97,12 @@
                 </tr>
             </tbody>
         </table>
--->
-        <div class="ThumbnailContainer" th:if="${files != null}">
-            <div class="Thumbnail" th:each="file : ${files}" style="width:210px;">
+        <div class="ThumbnailContainer" th:if="${files!=null && viewType.value.equals('thumbnails')}">
+            <div class="Thumbnail" th:each="file : ${files}" th:style="${'width:'+(thumbnailSize.size+4)+'px;'}">
                 <a href="" th:href="${folder.getKey() +'/'+ file}">
-                    <img src="" th:src="${folder.getKey() +'/'+ file + '?t=' + thumbnailSize}" alt="{file}" th:alt="${file}" title="{file}" th:title="${file}"/>
+                    <img src="" th:src="${folder.getKey() +'/'+ file + '?t=' + thumbnailSize.size}"
+                         alt="{file}" th:alt="${file}"
+                         title="{file}" th:title="${file}"/>
                     <br/>
                     <span th:text="${file}">{file}</span>
                 </a>
