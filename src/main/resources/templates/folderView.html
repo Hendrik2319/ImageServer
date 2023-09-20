@@ -3,11 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <title>Image Server</title>
+    <style>
+        html {
+            height: 100%;
+        }
+        body {
+            padding: 10px;
+            margin: 0;
+            height: calc(100% - 20px);
+            font-family: sans-serif;
+        }
+        .MainContainer {
+            width: 100%;
+            max-height: calc(100% - 40px);
+        }
+        .ThumbnailContainer {
+            display:flex;
+            flex-wrap:wrap;
+            box-sizing: border-box;
+            width: 100%;
+            height: calc(100% - 60px);
+            overflow:auto;
+            border:1px solid black;
+            padding: 10px;
+        }
+        .Thumbnail {
+            border:1px solid black;
+            overflow:auto;
+        }
+        .Thumbnail span {
+            overflow-wrap:break-word;
+        }
+    </style>
 </head>
 <body>
     <a href="/">&lt; back</a>
     <h3 th:if="${error != null}" th:text="${error}" style="color:red;">{error}</h3>
-    <div th:if="${folder != null}">
+    <div class="MainContainer" th:if="${folder != null}">
         <h3  th:text="'Folder: '+${folder.getKey()}">{folder}</h3>
         <form th:action="${folder.getKey()}" method="POST">
             <label th:if="${pageSizes != null}">
@@ -34,6 +66,7 @@
             <button th:if="${pageSize>0}" type="submit" name="page_button" value="down">&lt;</button>
             <button th:if="${pageSize>0}" type="submit" name="page_button" value="up">&gt;</button>
         </form>
+<!--
         <table th:if="${files != null}">
             <thead>
                 <tr>
@@ -46,6 +79,16 @@
                 </tr>
             </tbody>
         </table>
+-->
+        <div class="ThumbnailContainer" th:if="${files != null}">
+            <div class="Thumbnail" th:each="file : ${files}" style="width:210px;">
+                <a href="" th:href="${folder.getKey() +'/'+ file}">
+                    <img src="" th:src="${folder.getKey() +'/'+ file + '?t=' + thumbnailSize}" alt="{file}" th:alt="${file}" title="{file}" th:title="${file}"/>
+                    <br/>
+                    <span th:text="${file}">{file}</span>
+                </a>
+            </div>
+        </div>
     </div>
 </body>
 </html>

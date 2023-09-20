@@ -102,6 +102,8 @@ public class WebController {
         model.addAttribute("pages", pages);
         model.addAttribute("pageSize", pageSize);
         model.addAttribute("pageSizes", pageSizes);
+        model.addAttribute("thumbnailSize", ThumbnailSize._200.size);
+        model.addAttribute("thumbnailSizes", ThumbnailSize.values());
         return "folderView";
     }
 

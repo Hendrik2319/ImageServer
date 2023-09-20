@@ -7,7 +7,7 @@ public enum ThumbnailSize {
     _200(200),
     _250(250),
     ;
-    final int size;
+    public final int size;
 
     ThumbnailSize(int size) {
         this.size = size;
