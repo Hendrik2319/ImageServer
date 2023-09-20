@@ -1,6 +1,6 @@
 package com.example.imageserver.web;
 
-import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 public enum ViewType {
     Table("Table", "table"),
@@ -14,15 +14,15 @@ public enum ViewType {
         this.value = value;
     }
 
-    public static @NonNull ViewType parse(String viewTypeStr, @NonNull ViewType defaultValue) {
+    public static @Nullable ViewType parse(String viewTypeStr) {
         if (viewTypeStr==null)
-            return defaultValue;
+            return null;
 
         viewTypeStr = viewTypeStr.toLowerCase();
         for (ViewType value : values())
             if (value.value.equals(viewTypeStr))
                 return value;
 
-        return defaultValue;
+        return null;
     }
 }

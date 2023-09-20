@@ -36,7 +36,7 @@ public class WebController {
 
     @GetMapping("/{folderKey}")
     public String getFolderInit(Model model, @PathVariable String folderKey) {
-        return getFolderPage_(model, folderKey, null, 0, 20, ViewType.Thumbnails, ThumbnailSize._100);
+        return getFolderPage_(model, folderKey, null, 0, 20, null, null);
     }
 
     @PostMapping("/{folderKey}")
@@ -45,23 +45,26 @@ public class WebController {
             @RequestParam(name="page_button") @Nullable String pageButton,
             @RequestParam(name="page_start"    , defaultValue =   "0") int pageStart,
             @RequestParam(name="page_size"     , defaultValue =  "20") int pageSize,
-            @RequestParam(name="view_type"     , defaultValue = "thumbnails") String viewTypeStr,
-            @RequestParam(name="thumbnail_size", defaultValue = "100") int thumbnailSize
+            @RequestParam(name="view_type"     ) @Nullable String viewTypeStr,
+            @RequestParam(name="thumbnail_size") @Nullable Integer thumbnailSize
     ) {
         //System.out.printf("[%s] page_button: %s / page_start: %s / page_size: %s / view_type: %s%n", folderKey, pageButton, pageStart, pageSize, viewTypeStr);
         return getFolderPage_(
                 model, folderKey, pageButton, pageStart, pageSize,
-                ViewType.parse(viewTypeStr, ViewType.Thumbnails),
-                ThumbnailSize.get(thumbnailSize, ThumbnailSize._100)
+                ViewType.parse(viewTypeStr),
+                ThumbnailSize.get(thumbnailSize)
         );
     }
 
     private String getFolderPage_(
             @NonNull Model model, @NonNull String folderKey, String pageButton,
             int pageStart, int pageSize,
-            @NonNull ViewType viewType, @NonNull ThumbnailSize thumbnailSize
+            ViewType viewType, ThumbnailSize thumbnailSize
     ) {
         Folder folder = folderRepository.get(folderKey);
+
+        if (viewType     ==null) viewType = ViewType.Thumbnails;
+        if (thumbnailSize==null) thumbnailSize = ThumbnailSize._200;
 
         String error = null;
         List<String> files = null;

@@ -1,13 +1,15 @@
 package com.example.imageserver.data;
 
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 public enum ThumbnailSize {
-    _50(50),
     _100(100),
     _150(150),
     _200(200),
     _250(250),
+    _300(300),
+    _400(400),
     ;
     public final int size;
 
@@ -23,11 +25,12 @@ public enum ThumbnailSize {
         return null;
     }
 
-    public static @NonNull ThumbnailSize get(int size, @NonNull ThumbnailSize defaultValue) {
-        for (ThumbnailSize ts : values())
-            if (ts.size == size)
-                return ts;
-        return defaultValue;
+    public static @Nullable ThumbnailSize get(Integer size) {
+        if (size!=null)
+            for (ThumbnailSize ts : values())
+                if (ts.size == size)
+                    return ts;
+        return null;
     }
 
     public String getLabel() {

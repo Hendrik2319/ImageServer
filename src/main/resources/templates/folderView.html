@@ -28,10 +28,15 @@
             padding: 10px;
         }
         .Thumbnail {
-            border:1px solid black;
+            border: 1px solid black;
+            padding: 2px;
         }
         .Thumbnail span {
             overflow-wrap:break-word;
+        }
+        form * {
+            font-family: sans-serif;
+            font-size: 16px;
         }
     </style>
 </head>
@@ -98,7 +103,7 @@
             </tbody>
         </table>
         <div class="ThumbnailContainer" th:if="${files!=null && viewType.value.equals('thumbnails')}">
-            <div class="Thumbnail" th:each="file : ${files}" th:style="${'width:'+(thumbnailSize.size+4)+'px;'}">
+            <div class="Thumbnail" th:each="file : ${files}" th:style="${'width:'+thumbnailSize.size+'px;'}">
                 <a href="" th:href="${folder.getKey() +'/'+ file}">
                     <img src="" th:src="${folder.getKey() +'/'+ file + '?t=' + thumbnailSize.size}"
                          alt="{file}" th:alt="${file}"
