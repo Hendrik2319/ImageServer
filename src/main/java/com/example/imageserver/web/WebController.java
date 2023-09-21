@@ -130,7 +130,7 @@ public class WebController {
             HttpServletResponse response,
             @PathVariable String folderKey,
             @PathVariable String fileName,
-            @RequestParam(name="t") @Nullable String thumbnailSize
+            @RequestParam(name="t") @Nullable Integer thumbnailSize
     ) {
         Folder folder = folderRepository.get(folderKey);
         if (folder==null) {
@@ -145,15 +145,12 @@ public class WebController {
         }
 
         if (thumbnailSize!=null) {
-            ThumbnailSize size = ThumbnailSize.get(thumbnailSize);
-            if (size!=null) {
-                byte[] bytes = file.getThumbnail(size);
-                if (bytes==null)
-                    returnError(response, "ERROR: Can't create thumbnail image");
-                else
-                    returnRawData(response, bytes, FileData.THUMBNAIL_IMAGE_MEDIATYPE);
-                return;
-            }
+            byte[] bytes = file.getThumbnail(thumbnailSize);
+            if (bytes==null)
+                returnError(response, "ERROR: Can't create thumbnail image");
+            else
+                returnRawData(response, bytes, FileData.THUMBNAIL_IMAGE_MEDIATYPE);
+            return;
         }
 
         returnImage(response, file);

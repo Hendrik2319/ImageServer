@@ -9,7 +9,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal", "unused"})
@@ -20,19 +21,19 @@ public class FileData {
 
     @NonNull public final File file;
     @NonNull public final ImageFormat imageFormat;
-    private final EnumMap<ThumbnailSize,byte[]> thumbnails;
+    private final Map<Integer,byte[]> thumbnails;
 
     public FileData(File file) {
         this.file = Objects.requireNonNull(file);
         imageFormat = Objects.requireNonNull(ImageFormat.getImageFormat(file));
-        thumbnails = new EnumMap<>(ThumbnailSize.class);
+        thumbnails = new HashMap<>();
     }
 
     public String getName() {
         return file.getName();
     }
 
-    public byte[] getThumbnail(ThumbnailSize thumbnailSize) {
+    public byte[] getThumbnail(int thumbnailSize) {
         byte[] bytes = thumbnails.get(thumbnailSize);
         if (bytes==null) {
             BufferedImage image = null;
@@ -43,8 +44,8 @@ public class FileData {
             }
             int maxSize = image!=null ? Math.max(image.getWidth(), image.getHeight()) : 0;
             if (maxSize!=0) {
-                int newWidth  = (int) ((image.getWidth () * (long)thumbnailSize.size) / maxSize);
-                int newHeight = (int) ((image.getHeight() * (long)thumbnailSize.size) / maxSize);
+                int newWidth  = (int) ((image.getWidth () * (long)thumbnailSize) / maxSize);
+                int newHeight = (int) ((image.getHeight() * (long)thumbnailSize) / maxSize);
                 BufferedImage thumbImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
                 Graphics2D g2 = thumbImage.createGraphics();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

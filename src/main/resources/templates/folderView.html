@@ -1,118 +1,114 @@
 <!DOCTYPE html>
-<html lang="en">
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org"
+        lang="en">
 <head>
-    <meta charset="UTF-8">
     <title>Image Server</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
     <style>
-        html {
-            height: 100%;
-        }
-        body {
-            padding: 10px;
-            margin: 0;
-            height: calc(100% - 20px);
-            font-family: sans-serif;
-        }
-        .MainContainer {
-            width: 100%;
-            height: calc(100% - 40px);
-        }
-        .ThumbnailContainer {
-            display:flex;
-            flex-wrap:wrap;
-            box-sizing: border-box;
-            width: 100%;
-            max-height: calc(100% - 60px);
-            overflow:auto;
-            border:1px solid black;
-            padding: 10px;
-        }
         .Thumbnail {
-            border: 1px solid black;
+            border: 1px solid #6c6c6c;
             padding: 2px;
+            margin: 2px;
+            border-radius: 4px;
         }
         .Thumbnail span {
             overflow-wrap:break-word;
         }
-        form * {
-            font-family: sans-serif;
-            font-size: 16px;
+        .FormBlock {
+            display: inline-block;
+            background: white;
+            padding: 4px;
+            border-radius: 6px;
         }
     </style>
 </head>
 <body>
-    <a href="/">&lt; back</a>
-    <h3 th:if="${error != null}" th:text="${error}" style="color:red;">{error}</h3>
-    <div class="MainContainer" th:if="${folder != null}">
-        <h3 th:text="'Folder: '+${folder.getKey()}">{folder}</h3>
-        <form th:action="${'/storage/'+folder.getKey()}" method="POST">
-            <label th:if="${viewTypes != null}">
-                View Type:
-                <select name="view_type" onchange="submit();">
-                    <option th:each="vt : ${viewTypes}"
-                            th:value="${vt.value}"
-                            th:text="${vt.label}"
-                            th:selected="${viewType==vt}"
-                    >{viewType}</option>
-                </select>
-            </label>
-            <label th:if="${thumbnailSizes!=null && viewType.value.equals('thumbnails')}">
-                Thumbnail Size:
-                <select name="thumbnail_size" onchange="submit();">
-                    <option th:each="ts : ${thumbnailSizes}"
-                            th:value="${ts.size}"
-                            th:text="${ts.getLabel()}"
-                            th:selected="${thumbnailSize==ts}"
-                    >{thumbnailSize}</option>
-                </select>
-            </label>
-            <label th:if="${pageSizes != null}">
-                Page Size:
-                <select name="page_size" onchange="submit();">
-                    <option th:each="ps : ${pageSizes}"
-                            th:value="${ps.pageSize()}"
-                            th:text="${ps.pageSize()}"
-                            th:selected="${ps.isSelected()}"
-                    >{pageSize}</option>
-                    <option value="-1" th:selected="${pageSize<=0}">all</option>
-                </select>
-            </label>
-            <label th:if="${pages != null}">
-                Page:
-                <select name="page_start" onchange="submit();">
-                    <option th:each="page : ${pages}"
-                            th:value="${page.pageStart()}"
-                            th:text="${page.text()}"
-                            th:selected="${page.isSelected()}"
-                    >{page}</option>
-                </select>
-            </label>
-            <button th:if="${pageSize>0}" type="submit" name="page_button" value="down">&lt;</button>
-            <button th:if="${pageSize>0}" type="submit" name="page_button" value="up">&gt;</button>
-        </form>
-        <table th:if="${files!=null && viewType.value.equals('table')}">
-            <thead>
-                <tr>
-                    <th>File</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="file : ${files}">
-                    <td><a href="" th:href="${'/storage/'+ folder.getKey() +'/'+ file}" th:text="${file}">{file}</a></td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="ThumbnailContainer" th:if="${files!=null && viewType.value.equals('thumbnails')}">
-            <div class="Thumbnail" th:each="file : ${files}" th:style="${'width:'+thumbnailSize.size+'px;'}">
-                <a href="" th:href="${'/storage/'+ folder.getKey() +'/'+ file}">
-                    <img src="" th:src="${'/storage/'+ folder.getKey() +'/'+ file + '?t=' + thumbnailSize.size}"
-                         alt="{file}" th:alt="${file}"
-                         title="{file}" th:title="${file}"/>
-                    <br/>
-                    <span th:text="${file}">{file}</span>
-                </a>
+    <div class="container">
+        <a href="/">&lt; back</a>
+        <h3 th:if="${error != null}" th:text="${error}" style="color:red;">{error}</h3>
+        <div th:if="${folder != null}">
+            <h3 th:text="'Folder: '+${folder.getKey()}">{folder}</h3>
+            <form class="sticky-top" th:action="${'/storage/'+folder.getKey()}" method="POST">
+                <div class="form-floating FormBlock" th:if="${viewTypes != null}">
+                    <select class="form-select" id="view_type" name="view_type" onchange="submit();">
+                        <option th:each="vt : ${viewTypes}"
+                                th:value="${vt.value}"
+                                th:text="${vt.label}"
+                                th:selected="${viewType==vt}"
+                        >{viewType}</option>
+                    </select>
+                    <label for="view_type">View Type</label>
+                </div>
+                <div class="form-floating FormBlock" th:if="${thumbnailSizes!=null && viewType.value.equals('thumbnails')}">
+                    <select class="form-select" id="thumbnail_size" name="thumbnail_size" onchange="submit();">
+                        <option th:each="ts : ${thumbnailSizes}"
+                                th:value="${ts.size}"
+                                th:text="${ts.getLabel()}"
+                                th:selected="${thumbnailSize==ts}"
+                        >{thumbnailSize}</option>
+                    </select>
+                    <label for="thumbnail_size">Thumbnail Size</label>
+                </div>
+                <div class="form-floating FormBlock" th:if="${pageSizes != null}">
+                    <select class="form-select" id="page_size" name="page_size" onchange="submit();">
+                        <option th:each="ps : ${pageSizes}"
+                                th:value="${ps.pageSize()}"
+                                th:text="${ps.pageSize()}"
+                                th:selected="${ps.isSelected()}"
+                        >{pageSize}</option>
+                        <option value="-1" th:selected="${pageSize<=0}">all</option>
+                    </select>
+                    <label for="page_size">Page Size</label>
+                </div>
+                <div class="FormBlock" th:if="${pages!=null && pageSize>0}">
+                    <div class="form-floating" style="display: inline-block">
+                        <select class="form-select" id="page_start" name="page_start" onchange="submit();" th:if="${pages != null}">
+                            <option th:each="page : ${pages}"
+                                    th:value="${page.pageStart()}"
+                                    th:text="${page.text()}"
+                                    th:selected="${page.isSelected()}"
+                            >{page}</option>
+                        </select>
+                        <label for="page_start">Page</label>
+                    </div>
+                    <button th:if="${pageSize>0}" type="submit" name="page_button" value="down" class="btn btn-light">&lt;</button>
+                    <button th:if="${pageSize>0}" type="submit" name="page_button" value="up"   class="btn btn-light">&gt;</button>
+                </div>
+            </form>
+            <div class="table-responsive" th:if="${files!=null && viewType.value.equals('table')}">
+                <table class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Image</th>
+                            <th scope="col">File</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="file : ${files}">
+                            <td><img src="" th:src="${'/storage/'+ folder.getKey() +'/'+ file + '?t=50'}"
+                                     alt="{file}" th:alt="${file}"
+                                     title="{file}" th:title="${file}"/></td>
+                            <td><a href="" th:href="${'/storage/'+ folder.getKey() +'/'+ file}" th:text="${file}">{file}</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex flex-wrap" th:if="${files!=null && viewType.value.equals('thumbnails')}">
+                <div class="Thumbnail" th:each="file : ${files}" th:style="${'width:'+(thumbnailSize.size+6)+'px;'}">
+                    <a href="" th:href="${'/storage/'+ folder.getKey() +'/'+ file}">
+                        <img src="" th:src="${'/storage/'+ folder.getKey() +'/'+ file + '?t=' + thumbnailSize.size}"
+                             alt="{file}" th:alt="${file}"
+                             title="{file}" th:title="${file}"/>
+                        <br/>
+                        <span th:text="${file}">{file}</span>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
+    <script src="../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

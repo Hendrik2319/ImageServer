@@ -19,7 +19,7 @@
                         <th scope="col">Path  </th>
                     </tr>
                 </thead>
-                <tbody class="table-group-divider">
+                <tbody>
                     <tr th:each="folder : ${folders}">
                         <td><a href="" th:href="${'/storage/'+folder.getKey()}" th:text="${folder.getKey()}">[Label ]</a></td>
                         <td th:text="${folder.getPath()}">[Path  ]</td>
