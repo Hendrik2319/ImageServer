@@ -45,7 +45,7 @@
     <h3 th:if="${error != null}" th:text="${error}" style="color:red;">{error}</h3>
     <div class="MainContainer" th:if="${folder != null}">
         <h3 th:text="'Folder: '+${folder.getKey()}">{folder}</h3>
-        <form th:action="${folder.getKey()}" method="POST">
+        <form th:action="${'/storage/'+folder.getKey()}" method="POST">
             <label th:if="${viewTypes != null}">
                 View Type:
                 <select name="view_type" onchange="submit();">
@@ -98,14 +98,14 @@
             </thead>
             <tbody>
                 <tr th:each="file : ${files}">
-                    <td><a href="" th:href="${folder.getKey() +'/'+ file}" th:text="${file}">{file}</a></td>
+                    <td><a href="" th:href="${'/storage/'+ folder.getKey() +'/'+ file}" th:text="${file}">{file}</a></td>
                 </tr>
             </tbody>
         </table>
         <div class="ThumbnailContainer" th:if="${files!=null && viewType.value.equals('thumbnails')}">
             <div class="Thumbnail" th:each="file : ${files}" th:style="${'width:'+thumbnailSize.size+'px;'}">
-                <a href="" th:href="${folder.getKey() +'/'+ file}">
-                    <img src="" th:src="${folder.getKey() +'/'+ file + '?t=' + thumbnailSize.size}"
+                <a href="" th:href="${'/storage/'+ folder.getKey() +'/'+ file}">
+                    <img src="" th:src="${'/storage/'+ folder.getKey() +'/'+ file + '?t=' + thumbnailSize.size}"
                          alt="{file}" th:alt="${file}"
                          title="{file}" th:title="${file}"/>
                     <br/>

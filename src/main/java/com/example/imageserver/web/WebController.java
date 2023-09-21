@@ -34,12 +34,12 @@ public class WebController {
         return "mainView";
     }
 
-    @GetMapping("/{folderKey}")
+    @GetMapping("/storage/{folderKey}")
     public String getFolderInit(Model model, @PathVariable String folderKey) {
         return getFolderPage_(model, folderKey, null, 0, 20, null, null);
     }
 
-    @PostMapping("/{folderKey}")
+    @PostMapping("/storage/{folderKey}")
     public String getFolderPage(
             Model model, @PathVariable String folderKey,
             @RequestParam(name="page_button") @Nullable String pageButton,
@@ -125,7 +125,7 @@ public class WebController {
     public record Page(int pageStart, String text, boolean isSelected) {}
     public record PageSize(int pageSize, boolean isSelected) {}
 
-    @GetMapping("/{folderKey}/{fileName}")
+    @GetMapping("/storage/{folderKey}/{fileName}")
     public void getFile(
             HttpServletResponse response,
             @PathVariable String folderKey,
