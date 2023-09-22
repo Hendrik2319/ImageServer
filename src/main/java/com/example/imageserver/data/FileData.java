@@ -19,12 +19,18 @@ public class FileData {
     public static final String THUMBNAIL_IMAGE_FORMAT = "png";
     public static final String THUMBNAIL_IMAGE_MEDIATYPE = MediaType.IMAGE_PNG_VALUE;
 
+    interface ThumbnailCreationListener {
+        void thumbnailWasCreated(int thumbnailSize_px, int numberOfBytes);
+    }
+
     @NonNull public final File file;
     @NonNull public final ImageFormat imageFormat;
     private final Map<Integer,byte[]> thumbnails;
+    private final ThumbnailCreationListener thumbnailCreationListener;
 
-    public FileData(File file) {
+    public FileData(@NonNull File file, @NonNull ThumbnailCreationListener thumbnailCreationListener) {
         this.file = Objects.requireNonNull(file);
+        this.thumbnailCreationListener = thumbnailCreationListener;
         imageFormat = Objects.requireNonNull(ImageFormat.getImageFormat(file));
         thumbnails = new HashMap<>();
     }
@@ -55,6 +61,7 @@ public class FileData {
                     ImageIO.write(thumbImage, THUMBNAIL_IMAGE_FORMAT, output);
                     bytes = output.toByteArray();
                     thumbnails.put(thumbnailSize, bytes);
+                    thumbnailCreationListener.thumbnailWasCreated(thumbnailSize, bytes.length);
                 } catch (IOException ex) {
                     System.err.printf("IOException while writing image data to byte array: %s%n", ex.getMessage());
                 }

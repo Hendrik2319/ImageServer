@@ -1,9 +1,6 @@
 package com.example.imageserver.web;
 
-import com.example.imageserver.data.FileData;
-import com.example.imageserver.data.Folder;
-import com.example.imageserver.data.FolderRepository;
-import com.example.imageserver.data.ThumbnailSize;
+import com.example.imageserver.data.*;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
@@ -31,6 +28,7 @@ public class WebController {
     @GetMapping
     public String showMainPageshowAll(Model model) {
         model.addAttribute("folders", folderRepository.getAllFolders());
+        model.addAttribute("generalInfos", GeneralInfos.create(folderRepository));
         return "mainView";
     }
 
@@ -119,6 +117,7 @@ public class WebController {
         model.addAttribute("viewTypes", ViewType.values());
         model.addAttribute("thumbnailSize", thumbnailSize);
         model.addAttribute("thumbnailSizes", ThumbnailSize.values());
+        model.addAttribute("generalInfos", GeneralInfos.create(folder));
         return "folderView";
     }
 

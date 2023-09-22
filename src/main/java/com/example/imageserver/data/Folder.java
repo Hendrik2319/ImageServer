@@ -16,6 +16,10 @@ public class Folder {
     private final File folder;
     private final Map<String,FileData> filesMap;
     private final List<FileData> filesList;
+    @Getter
+    private long totalSizeOfThumbnails;
+    @Getter
+    private long totalNumberOfThumbnails;
 
     public Folder(String key, File folder) {
         this.key = key;
@@ -30,11 +34,16 @@ public class Folder {
     private void scanFolder() {
         filesMap.clear();
         filesList.clear();
+        totalSizeOfThumbnails = 0;
+        totalNumberOfThumbnails = 0;
         try (Stream<Path> stream = Files.list(folder.toPath())) {
             stream.forEach(path -> {
                 File file = path.toFile();
                 if (isImage(file)) {
-                    FileData fileData = new FileData(file);
+                    FileData fileData = new FileData(file, (size, bytes)->{
+                        totalSizeOfThumbnails += bytes;
+                        totalNumberOfThumbnails++;
+                    });
                     filesMap.put(file.getName(), fileData);
                     filesList.add(fileData);
                 }

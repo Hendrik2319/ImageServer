@@ -17,6 +17,17 @@ public class FolderRepository {
         folders = new HashMap<>();
     }
 
+    long getTotalNumberOfThumbnails() {
+        return folders.values().stream()
+                .mapToLong(Folder::getTotalNumberOfThumbnails)
+                .sum();
+    }
+    long getTotalSizeOfThumbnails() {
+        return folders.values().stream()
+                .mapToLong(Folder::getTotalSizeOfThumbnails)
+                .sum();
+    }
+
     public Collection<Folder> getAllFolders() {
         return folders.values();
     }
