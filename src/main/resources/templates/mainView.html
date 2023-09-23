@@ -11,6 +11,35 @@
 <body>
     <div class="container">
         <h3>Folders</h3>
+        <button th:fragment="btn_sys_info"
+                type="button" class="btn btn-outline-info"
+                style="
+                    --bs-btn-padding-y: .25rem;
+                    --bs-btn-padding-x: .5rem;
+                    --bs-btn-font-size: .75rem;
+                    position: absolute;
+                    top: 5px;
+                    right: 5px;
+                "
+                data-bs-container="body"
+                data-bs-html="true"
+                data-bs-toggle="popover"
+                data-bs-trigger="hover focus"
+                data-bs-placement="bottom"
+                data-bs-title="System Info"
+                data-bs-content="{System Info}"
+                th:data-bs-content="${
+                    'Thumbnails:<br/>'+
+                        '&nbsp;&nbsp;'+
+                        generalInfos.getTotalNumberOfThumbnails()+' in '+
+                        generalInfos.getTotalSizeOfThumbnails()+
+                        '<br/>'+
+                    'Memory:<br/>'+
+                        '&nbsp;&nbsp;free:  '+generalInfos.getFreeMem()+'<br/>'+
+                        '&nbsp;&nbsp;max:   '+generalInfos.getMaxMem()+'<br/>'+
+                        '&nbsp;&nbsp;total: '+generalInfos.getTotalMem()
+                }"
+        >SysInfo</button>
         <div class="table-responsive">
             <table class="table table-hover table-bordered">
                 <thead>
@@ -29,5 +58,10 @@
         </div>
     </div>
     <script src="../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <script>
+        document
+            .querySelectorAll('[data-bs-toggle="popover"]')
+            .forEach(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
+    </script>
 </body>
 </html>

@@ -21,7 +21,7 @@ public class Folder {
     @Getter
     private long totalNumberOfThumbnails;
 
-    public Folder(String key, File folder) {
+    Folder(String key, File folder) {
         this.key = key;
         if (folder==null) throw new IllegalArgumentException();
         if (!folder.isDirectory()) throw new IllegalArgumentException();
@@ -31,7 +31,7 @@ public class Folder {
         scanFolder();
     }
 
-    private void scanFolder() {
+    void scanFolder() {
         filesMap.clear();
         filesList.clear();
         totalSizeOfThumbnails = 0;
@@ -51,15 +51,9 @@ public class Folder {
         } catch (IOException ignored) {}
     }
 
-    private boolean isImage(File file) {
+    public static boolean isImage(File file) {
         if (!file.isFile()) return false;
         return FileData.ImageFormat.getImageFormat(file)!=null;
-    }
-
-    @SuppressWarnings("unused")
-    public File getFile(String file) {
-        FileData fd = getFileData(file);
-        return fd == null ? null : fd.file;
     }
 
     public FileData getFileData(String file) {

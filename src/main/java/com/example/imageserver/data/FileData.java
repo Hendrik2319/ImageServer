@@ -28,7 +28,7 @@ public class FileData {
     private final Map<Integer,byte[]> thumbnails;
     private final ThumbnailCreationListener thumbnailCreationListener;
 
-    public FileData(@NonNull File file, @NonNull ThumbnailCreationListener thumbnailCreationListener) {
+    FileData(@NonNull File file, @NonNull ThumbnailCreationListener thumbnailCreationListener) {
         this.file = Objects.requireNonNull(file);
         this.thumbnailCreationListener = thumbnailCreationListener;
         imageFormat = Objects.requireNonNull(ImageFormat.getImageFormat(file));
@@ -78,13 +78,13 @@ public class FileData {
         WEBP("image/webp",".webp"),
         ;
         public final String mediaType;
-        public final String[] extensions;
+        private final String[] extensions;
         ImageFormat(String mediaType, String... extensions) {
             this.mediaType = mediaType;
             this.extensions = extensions;
         }
 
-        static ImageFormat getImageFormat(File file) {
+        public static ImageFormat getImageFormat(File file) {
             if (!file.isFile()) return null;
             String fileName = file.getName().toLowerCase();
             for (ImageFormat format : values())

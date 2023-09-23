@@ -2,6 +2,8 @@ package com.example.imageserver.data;
 
 import org.springframework.lang.Nullable;
 
+import java.util.Locale;
+
 public record GeneralInfos (
         long totalSizeOfThumbnails,
         long totalNumberOfThumbnails,
@@ -40,18 +42,18 @@ public record GeneralInfos (
         );
     }
 
-    String getTotalNumberOfThumbnails() { return "%d thumbnails".formatted(totalNumberOfThumbnails); }
-    String getTotalSizeOfThumbnails   () { return getSizeStr(totalSizeOfThumbnails); }
-    String getMaxMem  () { return getSizeStr(maxMem  ); }
-    String getTotalMem() { return getSizeStr(totalMem); }
-    String getFreeMem () { return getSizeStr(freeMem ); }
+    public String getTotalNumberOfThumbnails() { return "%d thumbnails".formatted(totalNumberOfThumbnails); }
+    public String getTotalSizeOfThumbnails   () { return getSizeStr(totalSizeOfThumbnails); }
+    public String getMaxMem  () { return getSizeStr(maxMem  ); }
+    public String getTotalMem() { return getSizeStr(totalMem); }
+    public String getFreeMem () { return getSizeStr(freeMem ); }
 
     private static String getSizeStr(long size) {
         float size_d = size;
-        if (size_d<1500) return "%d bytes".formatted(size  ); size_d /= 1024;
-        if (size_d<1500) return "%f1.2 kB".formatted(size_d); size_d /= 1024;
-        if (size_d<1500) return "%f1.2 MB".formatted(size_d); size_d /= 1024;
-        if (size_d<1500) return "%f1.2 GB".formatted(size_d); size_d /= 1024;
-                         return "%f1.2 TB".formatted(size_d);
+        if (size_d<1500) return String.format(Locale.ENGLISH,"%d bytes",size  ); size_d /= 1024;
+        if (size_d<1500) return String.format(Locale.ENGLISH,"%1.2f kB",size_d); size_d /= 1024;
+        if (size_d<1500) return String.format(Locale.ENGLISH,"%1.2f MB",size_d); size_d /= 1024;
+        if (size_d<1500) return String.format(Locale.ENGLISH,"%1.2f GB",size_d); size_d /= 1024;
+                         return String.format(Locale.ENGLISH,"%1.2f TB",size_d);
     }
 }

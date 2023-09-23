@@ -28,6 +28,7 @@
 <body>
     <div class="container">
         <a href="/">&lt; back</a>
+        <button th:replace="~{ mainView :: btn_sys_info }"></button>
         <h3 th:if="${error != null}" th:text="${error}" style="color:red;">{error}</h3>
         <div th:if="${folder != null}">
             <h3 th:text="'Folder: '+${folder.getKey()}">{folder}</h3>
@@ -110,5 +111,10 @@
         </div>
     </div>
     <script src="../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <script>
+        document
+            .querySelectorAll('[data-bs-toggle="popover"]')
+            .forEach(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
+    </script>
 </body>
 </html>
