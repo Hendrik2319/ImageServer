@@ -3,13 +3,15 @@ package com.example.imageserver.data;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
 public class FolderRepository {
+
+    public static final Comparator<String> IGNORING_CASE_COMPARATOR = Comparator
+            .<String, String>comparing(String::toLowerCase)
+            .thenComparing(Comparator.naturalOrder());
 
     private final Map<String,Folder> folders;
 
@@ -28,8 +30,10 @@ public class FolderRepository {
                 .sum();
     }
 
-    public Collection<Folder> getAllFolders() {
-        return folders.values();
+    public List<Folder> getAllFolders() {
+        return folders.values().stream().sorted(
+                Comparator.comparing(Folder::getKey, IGNORING_CASE_COMPARATOR)
+        ).toList();
     }
 
     public boolean containsKey(String key) {

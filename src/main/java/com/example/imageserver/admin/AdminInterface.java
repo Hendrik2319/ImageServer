@@ -16,7 +16,7 @@ public class AdminInterface {
     private final JFrame mainWindow;
     @SuppressWarnings("FieldCanBeLocal")
     private final JToolBar toolBar;
-    private final JTextArea textArea;
+    private final FolderTable folderTable;
     private final JFileChooser folderChooser;
 
     public AdminInterface(FolderRepository folderRepository) {
@@ -40,9 +40,11 @@ public class AdminInterface {
                 addFolder(folder);
         }));
 
-        textArea = new JTextArea();
-        JScrollPane textAreaScrollPane = new JScrollPane(textArea);
-        textAreaScrollPane.setPreferredSize(new Dimension(500,300));
+        folderTable = new FolderTable(this.folderRepository);
+        JScrollPane textAreaScrollPane = new JScrollPane(folderTable);
+
+        Dimension tableSize = folderTable.getPreferredSize();
+        textAreaScrollPane.setPreferredSize(new Dimension(tableSize!=null ? tableSize.width+30 : 500,300));
 
         JPanel contentPane = new JPanel(new BorderLayout());
         contentPane.setBorder(BorderFactory.createEmptyBorder(0,5,5,5));
@@ -61,7 +63,6 @@ public class AdminInterface {
         catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ignored) {}
     }
 
-
     private void addFolder(File folder) {
         String key = folder.getName();
         while (folderRepository.containsKey(key)) {
@@ -74,7 +75,7 @@ public class AdminInterface {
             key = result.toString();
         }
         folderRepository.add(key, folder);
-        textArea.setText(folderRepository.toString());
+        folderTable.updateTable();
     }
 
     @SuppressWarnings("SameParameterValue")
