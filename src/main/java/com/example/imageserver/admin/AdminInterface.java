@@ -1,6 +1,8 @@
 package com.example.imageserver.admin;
 
+import com.example.imageserver.data.Folder;
 import com.example.imageserver.data.FolderRepository;
+import net.schwarzbaer.java.lib.copyimages.ImageComments;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -15,9 +17,10 @@ public class AdminInterface {
 
     private final JFrame mainWindow;
     @SuppressWarnings("FieldCanBeLocal")
-    private final JToolBar toolBar;
+    private final ToolBar toolBar;
     private final FolderTable folderTable;
     private final JFileChooser folderChooser;
+    private Folder selectedFolder;
 
     public AdminInterface(FolderRepository folderRepository) {
         this.folderRepository = folderRepository;
@@ -28,20 +31,15 @@ public class AdminInterface {
 
         mainWindow = new JFrame("Image Server - Admin Interface");
 
-        toolBar = new JToolBar();
-        toolBar.setFloatable(false);
-        toolBar.add(createButton("Add Folder", true, e->{
-            if (folderChooser.showOpenDialog(mainWindow)==JFileChooser.APPROVE_OPTION)
-                addFolder(folderChooser.getSelectedFile());
-        }));
-        toolBar.add(createButton("Add Example Folder", true, e->{
-            File folder = new File("/Users/hendrik/Pictures/Hintergrund");
-            if (folder.isDirectory())
-                addFolder(folder);
-        }));
+        toolBar = new ToolBar();
 
+        selectedFolder = null;
         folderTable = new FolderTable(this.folderRepository);
         JScrollPane textAreaScrollPane = new JScrollPane(folderTable);
+        folderTable.addSelectionListener(e -> {
+            selectedFolder = folderTable.getSelectedRowItem();
+            toolBar.btnSetMetaDataFolder.setEnabled(selectedFolder != null);
+        });
 
         Dimension tableSize = folderTable.getPreferredSize();
         textAreaScrollPane.setPreferredSize(new Dimension(tableSize!=null ? tableSize.width+30 : 500,300));
@@ -56,6 +54,43 @@ public class AdminInterface {
         mainWindow.setLocationByPlatform(true);
         mainWindow.pack();
         mainWindow.setVisible(true);
+    }
+
+    @SuppressWarnings("FieldCanBeLocal")
+    private class ToolBar extends JToolBar {
+
+        private final JButton btnAddFolder;
+        private final JButton btnAddExampleFolder;
+        private final JButton btnSetMetaDataFolder;
+
+        ToolBar() {
+            setFloatable(false);
+            add(btnAddFolder = createButton("Add Folder", true, e->{
+                if (folderChooser.showOpenDialog(mainWindow)==JFileChooser.APPROVE_OPTION)
+                    addFolder(folderChooser.getSelectedFile());
+            }));
+            add(btnAddExampleFolder = createButton("Add Example Folder", true, e->{
+                File folder = new File("/Users/hendrik/Pictures/Hintergrund");
+                if (folder.isDirectory())
+                    addFolder(folder);
+            }));
+
+            addSeparator();
+
+            add(btnSetMetaDataFolder = createButton("Set Folder for Meta Data", selectedFolder!=null, e->{
+                if (selectedFolder!=null && folderChooser.showOpenDialog(mainWindow)==JFileChooser.APPROVE_OPTION) {
+                    File folder = folderChooser.getSelectedFile();
+                    ImageComments imageComments = new ImageComments(folder.getPath());
+
+                    if (!imageComments.wasFileFound())
+                        selectedFolder.clearCommentsStorage("No data file found");
+                    else if (imageComments.isEmpty())
+                        selectedFolder.clearCommentsStorage("Data file is empty");
+                    else
+                        selectedFolder.setCommentsStorage(imageComments);
+                }
+            }));
+        }
     }
 
     public static void setLookAndFeel() {

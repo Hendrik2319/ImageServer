@@ -5,6 +5,7 @@ import com.example.imageserver.data.FolderRepository;
 import org.springframework.lang.NonNull;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 import java.util.ArrayList;
@@ -49,11 +50,22 @@ public class FolderTable extends JTable {
 		tableModel.fireTableDataChanged();
 	}
 
+	public void addSelectionListener(ListSelectionListener listener) {
+		selectionModel.addListSelectionListener(listener);
+	}
+
+	public Folder getSelectedRowItem() {
+		int rowV = getSelectedRow();
+		int rowM = rowV<0 ? -1 : convertRowIndexToModel(rowV);
+		return rowM<0 ? null : tableModel.getRow(rowM);
+	}
+
 	private static class FolderTableModel extends AbstractTableModel {
 
 		enum ColumnID {
-			Label( "Label", String.class, 150, Folder::getKey ),
-			Path ( "Path" , String.class, 400, Folder::getPath),
+			Label( "Label"            , String.class, 150, Folder::getKey ),
+			Path ( "Path"             , String.class, 400, Folder::getPath),
+			Meta ( "Meta Data Folder" , String.class, 400, Folder::getMetaDataFolderPath),
 			;
 			private final String title;
 			private final Class<?> columnClass;

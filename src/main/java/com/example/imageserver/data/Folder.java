@@ -1,6 +1,7 @@
 package com.example.imageserver.data;
 
 import lombok.Getter;
+import net.schwarzbaer.java.lib.copyimages.ImageComments;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +21,8 @@ public class Folder {
     private long totalSizeOfThumbnails;
     @Getter
     private long totalNumberOfThumbnails;
+    private ImageComments comments;
+    private String whyNoComments;
 
     Folder(String key, File folder) {
         this.key = key;
@@ -28,7 +31,26 @@ public class Folder {
         this.folder = folder.getAbsoluteFile();
         this.filesMap = new HashMap<>();
         this.filesList = new ArrayList<>();
+        comments = null;
+        whyNoComments = null;
         scanFolder();
+    }
+
+    public String getMetaDataFolderPath() {
+        if (comments!=null)
+            return comments.getDataFileFolderPath();
+        if (whyNoComments!=null)
+            return whyNoComments;
+        return null;
+    }
+
+    public void setCommentsStorage(ImageComments imageComments) {
+        this.comments = imageComments;
+        whyNoComments = null;
+    }
+    public void clearCommentsStorage(String reason) {
+        this.comments = null;
+        whyNoComments = reason;
     }
 
     void scanFolder() {
