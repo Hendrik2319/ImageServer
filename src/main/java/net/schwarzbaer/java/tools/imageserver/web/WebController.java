@@ -1,6 +1,5 @@
 package net.schwarzbaer.java.tools.imageserver.web;
 
-import com.example.imageserver.data.*;
 import jakarta.servlet.http.HttpServletResponse;
 import net.schwarzbaer.java.tools.imageserver.data.*;
 import org.springframework.http.MediaType;
@@ -8,7 +7,10 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
