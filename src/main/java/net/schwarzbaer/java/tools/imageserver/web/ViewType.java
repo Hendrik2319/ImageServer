@@ -1,4 +1,4 @@
-package com.example.imageserver.web;
+package net.schwarzbaer.java.tools.imageserver.web;
 
 import org.springframework.lang.Nullable;
 

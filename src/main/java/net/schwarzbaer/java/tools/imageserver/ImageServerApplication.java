@@ -1,6 +1,6 @@
-package com.example.imageserver;
+package net.schwarzbaer.java.tools.imageserver;
 
-import com.example.imageserver.admin.AdminInterface;
+import net.schwarzbaer.java.tools.imageserver.admin.AdminInterface;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

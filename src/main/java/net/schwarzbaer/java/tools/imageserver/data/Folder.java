@@ -1,4 +1,4 @@
-package com.example.imageserver.data;
+package net.schwarzbaer.java.tools.imageserver.data;
 
 import lombok.Getter;
 import net.schwarzbaer.java.lib.copyimages.ImageComments;

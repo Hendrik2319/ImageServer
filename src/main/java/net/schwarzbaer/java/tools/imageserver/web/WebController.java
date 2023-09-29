@@ -1,7 +1,8 @@
-package com.example.imageserver.web;
+package net.schwarzbaer.java.tools.imageserver.web;
 
 import com.example.imageserver.data.*;
 import jakarta.servlet.http.HttpServletResponse;
+import net.schwarzbaer.java.tools.imageserver.data.*;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;

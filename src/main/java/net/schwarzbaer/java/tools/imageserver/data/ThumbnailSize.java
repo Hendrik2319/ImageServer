@@ -1,6 +1,5 @@
-package com.example.imageserver.data;
+package net.schwarzbaer.java.tools.imageserver.data;
 
-import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 public enum ThumbnailSize {

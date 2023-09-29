@@ -1,4 +1,4 @@
-package com.example.imageserver.data;
+package net.schwarzbaer.java.tools.imageserver.data;
 
 import lombok.NonNull;
 import org.springframework.http.MediaType;

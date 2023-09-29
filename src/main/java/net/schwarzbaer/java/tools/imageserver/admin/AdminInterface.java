@@ -1,7 +1,7 @@
-package com.example.imageserver.admin;
+package net.schwarzbaer.java.tools.imageserver.admin;
 
-import com.example.imageserver.data.Folder;
-import com.example.imageserver.data.FolderRepository;
+import net.schwarzbaer.java.tools.imageserver.data.Folder;
+import net.schwarzbaer.java.tools.imageserver.data.FolderRepository;
 import net.schwarzbaer.java.lib.copyimages.ImageComments;
 import org.springframework.stereotype.Component;
 
