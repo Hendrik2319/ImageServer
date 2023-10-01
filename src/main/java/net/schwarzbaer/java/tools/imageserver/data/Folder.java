@@ -52,6 +52,9 @@ public class Folder {
         this.comments = null;
         whyNoComments = reason;
     }
+    public boolean hasCommentsStorage() {
+        return comments != null;
+    }
 
     void scanFolder() {
         filesMap.clear();
@@ -62,10 +65,16 @@ public class Folder {
             stream.forEach(path -> {
                 File file = path.toFile();
                 if (isImage(file)) {
-                    FileData fileData = new FileData(file, (size, bytes)->{
-                        totalSizeOfThumbnails += bytes;
-                        totalNumberOfThumbnails++;
-                    });
+                    FileData fileData = new FileData(
+                            file,
+                            () -> comments==null
+                                    ? null
+                                    : comments.get(file.getAbsolutePath()),
+                            (size, bytes)->{
+                                totalSizeOfThumbnails += bytes;
+                                totalNumberOfThumbnails++;
+                            }
+                    );
                     filesMap.put(file.getName(), fileData);
                     filesList.add(fileData);
                 }
@@ -102,12 +111,12 @@ public class Folder {
         return folder.getPath();
     }
 
-    public List<String> getFiles(int i0, int i1) {
+    public List<FileOutput> getFiles(int i0, int i1) {
         if (filesList.size()<=i0 || i1<=0 || i1<=i0)
             return List.of();
         i1 = Math.min(i1, filesList.size());
         i0 = Math.max(0, i0);
-        return filesList.subList(i0,i1).stream().map(FileData::getName).toList();
+        return filesList.subList(i0,i1).stream().map(FileData::createOutput).toList();
     }
 
     public int getFileCount() {

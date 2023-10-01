@@ -28,6 +28,7 @@ public class WebController {
         this.folderRepository = folderRepository;
     }
 
+    @SuppressWarnings("SameReturnValue")
     @GetMapping
     public String showMainPageshowAll(Model model) {
         model.addAttribute("folders", folderRepository.getAllFolders());
@@ -57,6 +58,7 @@ public class WebController {
         );
     }
 
+    @SuppressWarnings("SameReturnValue")
     private String getFolderPage_(
             @NonNull Model model, @NonNull String folderKey, String pageButton,
             int pageStart, int pageSize,
@@ -68,7 +70,7 @@ public class WebController {
         if (thumbnailSize==null) thumbnailSize = ThumbnailSize._200;
 
         String error = null;
-        List<String> files = null;
+        List<FileOutput> files = null;
         List<Page> pages = null;
         List<PageSize> pageSizes = null;
 
@@ -121,6 +123,7 @@ public class WebController {
         model.addAttribute("thumbnailSize", thumbnailSize);
         model.addAttribute("thumbnailSizes", ThumbnailSize.values());
         model.addAttribute("generalInfos", GeneralInfos.create(folder));
+        model.addAttribute("showFileComments", folder!=null && folder.hasCommentsStorage());
         return "folderView";
     }
 

@@ -38,7 +38,7 @@ public class AdminInterface {
         JScrollPane textAreaScrollPane = new JScrollPane(folderTable);
         folderTable.addSelectionListener(e -> {
             selectedFolder = folderTable.getSelectedRowItem();
-            toolBar.btnSetMetaDataFolder.setEnabled(selectedFolder != null);
+            toolBar.updateAccess();
         });
 
         Dimension tableSize = folderTable.getPreferredSize();
@@ -56,12 +56,13 @@ public class AdminInterface {
         mainWindow.setVisible(true);
     }
 
-    @SuppressWarnings("FieldCanBeLocal")
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private class ToolBar extends JToolBar {
 
         private final JButton btnAddFolder;
         private final JButton btnAddExampleFolder;
         private final JButton btnSetMetaDataFolder;
+        private final JButton btnSetExampleMetaDataFolder;
 
         ToolBar() {
             setFloatable(false);
@@ -78,18 +79,33 @@ public class AdminInterface {
             addSeparator();
 
             add(btnSetMetaDataFolder = createButton("Set Folder for Meta Data", selectedFolder!=null, e->{
-                if (selectedFolder!=null && folderChooser.showOpenDialog(mainWindow)==JFileChooser.APPROVE_OPTION) {
-                    File folder = folderChooser.getSelectedFile();
-                    ImageComments imageComments = new ImageComments(folder.getPath());
-
-                    if (!imageComments.wasFileFound())
-                        selectedFolder.clearCommentsStorage("No data file found");
-                    else if (imageComments.isEmpty())
-                        selectedFolder.clearCommentsStorage("Data file is empty");
-                    else
-                        selectedFolder.setCommentsStorage(imageComments);
-                }
+                if (selectedFolder!=null && folderChooser.showOpenDialog(mainWindow)==JFileChooser.APPROVE_OPTION)
+	                setImageComments(folderChooser.getSelectedFile());
             }));
+
+            add(btnSetExampleMetaDataFolder = createButton("Set Example Folder for Meta Data", selectedFolder!=null, e->{
+                File folder = new File("/Users/hendrik/Desktop/Tools/ImageComments");
+                if (folder.isDirectory())
+                    setImageComments(folder);
+            }));
+        }
+
+        private void setImageComments(File folder) {
+            ImageComments imageComments = new ImageComments(folder.getPath());
+
+            if (!imageComments.wasFileFound())
+                selectedFolder.clearCommentsStorage("No data file found");
+            else if (imageComments.isEmpty())
+                selectedFolder.clearCommentsStorage("Data file is empty");
+            else
+                selectedFolder.setCommentsStorage(imageComments);
+
+            folderTable.updateColumn(FolderTable.FolderTableModel.ColumnID.Meta);
+        }
+
+        public void updateAccess() {
+            btnSetMetaDataFolder.setEnabled(selectedFolder != null);
+            btnSetExampleMetaDataFolder.setEnabled(selectedFolder != null);
         }
     }
 

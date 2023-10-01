@@ -16,6 +16,7 @@ public enum ThumbnailSize {
         this.size = size;
     }
 
+    @SuppressWarnings("unused")
     public static ThumbnailSize get(String thumbnailSizeStr) {
         if (thumbnailSizeStr!=null)
             for (ThumbnailSize size : values())

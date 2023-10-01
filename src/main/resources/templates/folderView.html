@@ -85,26 +85,28 @@
                         <tr>
                             <th scope="col">Image</th>
                             <th scope="col">File</th>
+                            <th th:if="${showFileComments}">Comment</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr th:each="file : ${files}">
-                            <td><img src="" th:src="${'/storage/'+ folder.getKey() +'/'+ file + '?t=50'}"
-                                     alt="{file}" th:alt="${file}"
-                                     title="{file}" th:title="${file}"/></td>
-                            <td><a href="" th:href="${'/storage/'+ folder.getKey() +'/'+ file}" th:text="${file}">{file}</a></td>
+                            <td><img src="" th:src="${'/storage/'+ folder.getKey() +'/'+ file.fileName() + '?t=50'}"
+                                     alt="{file}" th:alt="${file.fileName()}"
+                                     title="{file}" th:title="${file.fileName()}"/></td>
+                            <td><a href="" th:href="${'/storage/'+ folder.getKey() +'/'+ file.fileName()}" th:text="${file.fileName()}">{file}</a></td>
+                            <th th:if="${showFileComments}" th:text="${file.comment()==null ? '' : file.comment()}">{Comment}</th>
                         </tr>
                     </tbody>
                 </table>
             </div>
             <div class="d-flex flex-wrap" th:if="${files!=null && viewType.value.equals('thumbnails')}">
                 <div class="Thumbnail" th:each="file : ${files}" th:style="${'width:'+(thumbnailSize.size+6)+'px;'}">
-                    <a href="" th:href="${'/storage/'+ folder.getKey() +'/'+ file}">
-                        <img src="" th:src="${'/storage/'+ folder.getKey() +'/'+ file + '?t=' + thumbnailSize.size}"
-                             alt="{file}" th:alt="${file}"
-                             title="{file}" th:title="${file}"/>
+                    <a href="" th:href="${'/storage/'+ folder.getKey() +'/'+ file.fileName()}">
+                        <img src="" th:src="${'/storage/'+ folder.getKey() +'/'+ file.fileName() + '?t=' + thumbnailSize.size}"
+                             alt="{file}" th:alt="${file.fileName()}"
+                             title="{file}" th:title="${file.fileName()}"/>
                         <br/>
-                        <span th:text="${file}">{file}</span>
+                        <span th:text="${file.fileName()}">{file}</span>
                     </a>
                 </div>
             </div>

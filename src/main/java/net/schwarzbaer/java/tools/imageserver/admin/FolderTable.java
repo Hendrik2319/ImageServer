@@ -6,6 +6,7 @@ import org.springframework.lang.NonNull;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 import java.util.ArrayList;
@@ -50,6 +51,10 @@ public class FolderTable extends JTable {
 		tableModel.fireTableDataChanged();
 	}
 
+	public void updateColumn( FolderTableModel.ColumnID columnID ) {
+		tableModel.fireTableColumnUpdated(columnID);
+	}
+
 	public void addSelectionListener(ListSelectionListener listener) {
 		selectionModel.addListSelectionListener(listener);
 	}
@@ -60,9 +65,9 @@ public class FolderTable extends JTable {
 		return rowM<0 ? null : tableModel.getRow(rowM);
 	}
 
-	private static class FolderTableModel extends AbstractTableModel {
+	public static class FolderTableModel extends AbstractTableModel {
 
-		enum ColumnID {
+		public enum ColumnID {
 			Label( "Label"            , String.class, 150, Folder::getKey ),
 			Path ( "Path"             , String.class, 400, Folder::getPath),
 			Meta ( "Meta Data Folder" , String.class, 400, Folder::getMetaDataFolderPath),
@@ -72,6 +77,7 @@ public class FolderTable extends JTable {
 			private final int width;
 			private final Function<Folder, ?> getValue;
 
+			@SuppressWarnings("SameParameterValue")
 			<Type> ColumnID(String title, Class<Type> columnClass, int width, Function<Folder, Type> getValue ) {
 				this.title = title;
 				this.columnClass = columnClass;
@@ -96,6 +102,12 @@ public class FolderTable extends JTable {
 			data.addAll(repo.getAllFolders());
 		}
 
+		public void fireTableColumnUpdated(ColumnID columnID) {
+			int columnV = this.getColumn(columnID);
+			if (columnV >= 0)
+				fireTableChanged(new TableModelEvent(this, 0, getRowCount()-1, columnV));
+		}
+
 		@Override
 		public int getRowCount() {
 			return data.size();
@@ -112,11 +124,19 @@ public class FolderTable extends JTable {
 			return columns.length;
 		}
 
+		@SuppressWarnings("SameParameterValue")
 		private <Type> Type getValueFromColumn(int columnIndex, Function<ColumnID, Type> getValue, Type defaultValue) {
 			ColumnID columnID = getColumnID(columnIndex);
 			if (getValue!=null && columnID!=null)
 				return getValue.apply(columnID);
 			return defaultValue;
+		}
+
+		private int getColumn(ColumnID columnID) {
+			for (int i=0; i<columns.length; i++)
+				if (columns[i] == columnID)
+					return i;
+			return -1;
 		}
 
 		private ColumnID getColumnID(int columnIndex) {

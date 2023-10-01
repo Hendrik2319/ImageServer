@@ -1,7 +1,7 @@
 package net.schwarzbaer.java.tools.imageserver.data;
 
-import lombok.NonNull;
 import org.springframework.http.MediaType;
+import org.springframework.lang.NonNull;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -12,27 +12,33 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
-@SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal", "unused"})
 public class FileData {
 
     public static final String THUMBNAIL_IMAGE_FORMAT = "png";
     public static final String THUMBNAIL_IMAGE_MEDIATYPE = MediaType.IMAGE_PNG_VALUE;
 
     interface ThumbnailCreationListener {
-        void thumbnailWasCreated(int thumbnailSize_px, int numberOfBytes);
+        void thumbnailWasCreated(@SuppressWarnings("unused") int thumbnailSize_px, int numberOfBytes);
     }
 
-    @NonNull public final File file;
-    @NonNull public final ImageFormat imageFormat;
+    @NonNull public  final File file;
+    @NonNull private final Supplier<String> getComment;
+    @NonNull public  final ImageFormat imageFormat;
     private final Map<Integer,byte[]> thumbnails;
     private final ThumbnailCreationListener thumbnailCreationListener;
 
-    FileData(@NonNull File file, @NonNull ThumbnailCreationListener thumbnailCreationListener) {
+    FileData(@NonNull File file, @NonNull Supplier<String> getComment, @NonNull ThumbnailCreationListener thumbnailCreationListener) {
         this.file = Objects.requireNonNull(file);
+        this.getComment = getComment;
         this.thumbnailCreationListener = thumbnailCreationListener;
         imageFormat = Objects.requireNonNull(ImageFormat.getImageFormat(file));
         thumbnails = new HashMap<>();
+    }
+
+    public FileOutput createOutput() {
+        return new FileOutput( getName(), getComment.get(), imageFormat );
     }
 
     public String getName() {
