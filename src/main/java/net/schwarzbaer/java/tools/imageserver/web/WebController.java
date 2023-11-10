@@ -31,7 +31,7 @@ public class WebController {
     @SuppressWarnings("SameReturnValue")
     @GetMapping
     public String showMainPageshowAll(Model model) {
-        model.addAttribute("folders", folderRepository.getAllFolders());
+        model.addAttribute("folders", folderRepository.getAllFolders(true));
         model.addAttribute("generalInfos", GeneralInfos.create(folderRepository));
         return "mainView";
     }

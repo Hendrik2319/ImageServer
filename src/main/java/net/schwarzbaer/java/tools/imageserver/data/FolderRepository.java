@@ -30,7 +30,9 @@ public class FolderRepository {
                 .sum();
     }
 
-    public List<Folder> getAllFolders() {
+    public List<Folder> getAllFolders(boolean sorted) {
+        if (!sorted)
+            return List.copyOf(folders.values());
         return folders.values().stream().sorted(
                 Comparator.comparing(Folder::getKey, IGNORING_CASE_COMPARATOR)
         ).toList();
@@ -40,12 +42,18 @@ public class FolderRepository {
         return folders.containsKey(key);
     }
 
-    public void add(String key, File folder) {
-        folders.put(key, new Folder(key, folder));
+    public Folder add(String key, File folder) {
+        Folder newFolder = new Folder(key, folder);
+        folders.put(key, newFolder);
+        return newFolder;
     }
 
     public Folder get(String key) {
         return folders.get(key);
+    }
+
+    public void clear() {
+        folders.clear();
     }
 
     @Override
@@ -55,4 +63,5 @@ public class FolderRepository {
                 .sorted()
                 .collect(Collectors.joining("\r\n"));
     }
+
 }

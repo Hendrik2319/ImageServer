@@ -99,7 +99,7 @@ public class FolderTable extends JTable {
 
 		private void updateData() {
 			data.clear();
-			data.addAll(repo.getAllFolders());
+			data.addAll(repo.getAllFolders(true));
 		}
 
 		public void fireTableColumnUpdated(ColumnID columnID) {

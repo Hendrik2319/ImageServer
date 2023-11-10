@@ -48,6 +48,9 @@ public class Folder {
         this.comments = imageComments;
         whyNoComments = null;
     }
+    public String getCommentsStoragePath() {
+        return comments == null ? null : comments.getDataFileFolderPath();
+    }
     public void clearCommentsStorage(String reason) {
         this.comments = null;
         whyNoComments = reason;
